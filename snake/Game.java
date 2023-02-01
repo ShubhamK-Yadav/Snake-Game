@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Game extends JPanel implements ActionListener, KeyListener {
+public class Game extends JPanel implements KeyListener, ActionListener{
     private static final int BOARD_WIDTH = 600, BOARD_HEIGHT = 600;
     private static final int UNIT_BLOCK = 30;
     private static int gameBlocks = BOARD_WIDTH * BOARD_HEIGHT / UNIT_BLOCK;
@@ -20,9 +20,9 @@ public class Game extends JPanel implements ActionListener, KeyListener {
 
     public Game() {
         this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
-        this.setFocusable(true);
         this.setBackground(Color.black);
-        this.addKeyListener(this);
+        this.setFocusable(true);
+        this.requestFocus();
         startGame();
     }
 
@@ -54,14 +54,52 @@ public class Game extends JPanel implements ActionListener, KeyListener {
     public void paintComponent(Graphics g){
         super.paintComponent(g);
     }
-    
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        System.out.println("Key pressed " + e.getKeyCode());
+        if (e.getKeyCode() == (KeyEvent.VK_W)){
+            if (direction != 'D'){
+                direction = 'U';
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_S){
+            if (direction != 'U'){
+                direction = 'D';
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_A){
+            if (direction != 'R'){
+                direction = 'L';
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_D){
+            if (direction != 'L'){
+                direction = 'R';
+            }
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        
+    }
+
     public void paint(Graphics g) {
         g.fillRect(0,0, 600,600);
         g.setColor(Color.black);
 
         //grid to keep track of the snake movement
         g.setColor(Color.green);
-        for (int i = 1; i < 20; i++) {
+        for (int i = 1; i < BOARD_HEIGHT/UNIT_BLOCK; i++) {
             g.drawLine(i * UNIT_BLOCK, 0, i * UNIT_BLOCK, 600);
             g.drawLine(0, i*UNIT_BLOCK, 600, i*UNIT_BLOCK);
         }
@@ -97,43 +135,5 @@ public class Game extends JPanel implements ActionListener, KeyListener {
             checkCollisionSnake();
         }
         repaint();
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        System.out.println("Key pressed code " + e.getKeyCode());
-        if (e.getKeyCode() == (KeyEvent.VK_UP)){
-            if (direction != 'D'){
-                direction = 'U';
-            }
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_DOWN){
-            if (direction != 'U'){
-                direction = 'D';
-            }
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_LEFT){
-            if (direction != 'R'){
-                direction = 'L';
-            }
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT){
-            if (direction != 'L'){
-                direction = 'R';
-            }
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-
     }
 }
