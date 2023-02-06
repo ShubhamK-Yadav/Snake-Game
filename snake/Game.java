@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Random;
 
 public class Game extends JPanel implements KeyListener, ActionListener{
     private static final int BOARD_WIDTH = 600, BOARD_HEIGHT = 600;
@@ -16,6 +18,7 @@ public class Game extends JPanel implements KeyListener, ActionListener{
     private static int appleY;
     private static boolean running = false;
     private static Timer timer;
+    private static Random random = new Random();
 
 
     public Game() {
@@ -28,6 +31,7 @@ public class Game extends JPanel implements KeyListener, ActionListener{
 
     public void startGame(){
         running = true;
+        newApple();
         timer = new Timer(75, this);
         timer.start();
     }
@@ -86,6 +90,15 @@ public class Game extends JPanel implements KeyListener, ActionListener{
                 direction = 'R';
             }
         }
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER){
+            if(running == false){
+                bodyParts = 3;
+                score = 0;
+                direction = 'R';
+                running = true;
+            }
+        }
     }
 
     @Override
@@ -103,6 +116,11 @@ public class Game extends JPanel implements KeyListener, ActionListener{
             g.drawLine(i * UNIT_BLOCK, 0, i * UNIT_BLOCK, 600);
             g.drawLine(0, i*UNIT_BLOCK, 600, i*UNIT_BLOCK);
         }
+        g.setColor(Color.white);
+        g.drawString("Score: " + score, BOARD_WIDTH - UNIT_BLOCK * 3, UNIT_BLOCK / 2);
+
+        g.setColor(Color.red);
+        g.fillRect(appleX, appleY, UNIT_BLOCK, UNIT_BLOCK);
 
         for (int i = 0; i < bodyParts; i++) {
             if (i == 0) {
@@ -113,18 +131,47 @@ public class Game extends JPanel implements KeyListener, ActionListener{
                 g.fillRect(wholeSnakeX[i], wholeSnakeY[i], UNIT_BLOCK, UNIT_BLOCK);
             }
         }
+
+        gameOver(g);
     }
 
-    public int randomAppleCoord() {
-        return 0;
+    public void newApple() {
+        appleX = random.nextInt((int) BOARD_WIDTH / UNIT_BLOCK) * UNIT_BLOCK;
+        appleY = random.nextInt((int) BOARD_HEIGHT / UNIT_BLOCK) * UNIT_BLOCK;
     }
 
-    public boolean checkCollisionApple() {
-        return false;
+    public void checkCollisionApple() {
+        if (wholeSnakeX[0] == appleX && wholeSnakeY[0] == appleY) {
+            newApple();
+            bodyParts++;
+            score++;
+        }
     }
 
-    public boolean checkCollisionSnake() {
-        return false;
+    public void checkCollisionSnake() {
+        for (int i = bodyParts; i > 0; i--){
+            if (wholeSnakeX[0] == wholeSnakeX[i] && wholeSnakeY[0] == wholeSnakeY[i]){
+                running = false;
+            }
+        }
+
+        if (wholeSnakeX[0] == BOARD_WIDTH|| wholeSnakeX[0] == -UNIT_BLOCK){
+            running = false;
+        }
+        if (wholeSnakeY[0] == BOARD_HEIGHT || wholeSnakeY[0] == -UNIT_BLOCK){
+            running = false;
+        }
+    }
+
+    public void gameOver(Graphics g){
+        if (running == false){
+            g.setColor(Color.white);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 25));
+            g.drawString("Game Over!", BOARD_WIDTH/2 - UNIT_BLOCK * 5, BOARD_HEIGHT/2-UNIT_BLOCK * 2);
+            g.drawString("Please Press Enter to restart game", BOARD_WIDTH/2 - UNIT_BLOCK * 5, BOARD_HEIGHT/2);
+            Arrays.fill(wholeSnakeX, 0);
+            Arrays.fill(wholeSnakeY, 0);
+        }
     }
 
     @Override
